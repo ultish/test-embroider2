@@ -102,6 +102,11 @@
     "@embroider/compat": "^0.47.0",
     "@embroider/core": "^0.47.0",
     "@embroider/webpack": "^0.47.0",
+    "@fullhuman/postcss-purgecss": "^4.0.3",
+    "autoprefixer": "^10.3.7",
+    "ember-cli-postcss": "^7.0.2",
+    "postcss-import": "^14.0.2",
+    "tailwindcss": "^2.2.17",
     "webpack": "^5.58.2"
   }
 }
