@@ -2,6 +2,9 @@
 
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 const { Webpack } = require('@embroider/webpack');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+
+const { ESBuildMinifyPlugin } = require('esbuild-loader');
 
 const isProduction = EmberApp.env() === 'production';
 
@@ -23,15 +26,14 @@ module.exports = function (defaults) {
     // Add options here
     postcssOptions: {
       compile: {
+        enabled: true,
+        // you need this otherwise we won't recompile on changes in the `app`-tree
+        includePaths: ['app'],
+        cacheInclude: [/.*\.hbs$/, /.*\.css$/, /.*\.html/],
         plugins: [
-          {
-            module: require('postcss-import'),
-            options: {
-              path: ['node_modules'],
-            },
-          },
           require('tailwindcss')('./app/tailwind.config.js'),
-          ...isProduction ? [purgeCSS] : []
+          ...(isProduction ? [purgeCSS] : []),
+          require('autoprefixer'),
         ],
       },
     },
@@ -52,13 +54,27 @@ module.exports = function (defaults) {
 
   // return app.toTree();
   return require('@embroider/compat').compatBuild(app, Webpack, {
+    packagerOptions: {
+      webpackConfig: {
+        plugins: [new BundleAnalyzerPlugin()],
+        optimization: {
+          // this is much faster prod builds than default! go esbuild-loader!
+          minimizer: [
+            new ESBuildMinifyPlugin({
+              legalComments: 'none',
+              sourcemap: false,
+              minify: isProduction,
+              css: true,
+              exclude: [/monaco/, /codemirror/],
+            }),
+          ],
+        },
+      },
+    },
     staticAddonTestSupportTrees: true,
     staticAddonTrees: true,
     staticHelpers: true,
     staticComponents: true,
     splitAtRoutes: ['application', 'portfolios'], // can also be a RegExp
-    // packagerOptions: {
-    //    webpackConfig: { }
-    // }
   });
 };

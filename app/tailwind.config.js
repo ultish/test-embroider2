@@ -1,6 +1,6 @@
 /*global module*/
 module.exports = {
-  // mode: process.env.NODE_ENV ? 'jit' : undefined,
+  mode: process.env.NODE_ENV ? 'jit' : undefined,
   purge: [],
   darkMode: 'media', // or 'media' or 'class'
   theme: {
@@ -10,4 +10,4 @@ module.exports = {
     extend: {},
   },
   plugins: [],
-}
+};
